@@ -9,26 +9,27 @@ volumes:
 
 services:
   app:
-    build:
-      context: ./docker
+    #build:
+    #  context: ./docker
     image: sailorpapay/pack:php
     restart: unless-stopped
     tty: true
     volumes:
-      - ./:/var/www:cached
+      - /tmp/github/:/var/www:cached
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/local.ini
   #Nginx Service
-  nginx:
-    build:
-      context: ./docker/nginx
+  nginxpack:
+  #  build:
+  #    context: ./docker/nginx
     restart: unless-stopped
     image: sailorpapay/pack:nginx
     tty: true
     ports:
       - "8088:80"
     volumes:
+      - /tmp/github/:/var/www:cached
       - ./docker/nginx/local/conf.d/:/etc/nginx/conf.d/
-      - ./tmp/github/:/var/www:cached
+
 
   #MySQL Service
   mysql:
@@ -42,7 +43,7 @@ services:
       MYSQL_DATABASE: root
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: root
-      MYSQL_USER: root
+      MYSQL_USER: owner
       MYSQL_PASSWORD: root
     volumes:
 #      - ./docker/mysql/gametrivia.sql:/docker-entrypoint-initdb.d/gametrivia.sql
