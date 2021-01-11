@@ -28,7 +28,7 @@ services:
       - "8088:80"
     volumes:
       - ./docker/nginx/local/conf.d/:/etc/nginx/conf.d/
-      - ./:/var/www:cached
+      - ./tmp/github/:/var/www:cached
 
   #MySQL Service
   mysql:
