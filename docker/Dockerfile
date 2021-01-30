@@ -1,81 +1,75 @@
-FROM php:7.2-fpm-alpine
+FROM php:7.4-fpm
+WORKDIR /var/www
 
-# Install dev dependencies
-RUN apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
-    curl-dev \
-    imagemagick-dev \
-    libtool \
-    libxml2-dev \
-    sqlite-dev \
-    make
+# Install dependencies
 
-# Install production dependencies
-RUN apk add --no-cache \
-    bash \
-    curl \
-    g++ \
-    gcc \
-    git \
-    imagemagick \
-    libc-dev \
-    libpng-dev \
-    make \
-    mysql-client \
-    nodejs \
-    nodejs-npm \
-    yarn \
-    openssh-client \
-    rsync \
-    zlib-dev \
-    libzip-dev
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+        apt-utils \
+        libicu-dev \
+        libz-dev \
+        libpq-dev \
+        libjpeg-dev \
+        libsqlite3-dev \
+        libgmp-dev \
+        libzip-dev
 
-# Install PECL and PEAR extensions
-RUN pecl install \
-    imagick \
-    redis
 
-# Install and enable php extensions
-RUN docker-php-ext-enable \
-    imagick \
-    redis
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+        libsqlite3-dev \
+        libsqlite3-0 \
+        libfreetype6-dev \
+        libssl-dev \
+        libxslt-dev \
+      	libcurl3-dev \
+        libbz2-dev \
+        libmhash-dev \
+        libjpeg62-turbo-dev \
+        curl \
+        sqlite3 \
+        libmagickwand-dev \
+        libxml2-dev \
+        libonig-dev \
+        yarn
 
-RUN docker-php-ext-configure zip --with-libzip
+#Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=1.10.16
 
-RUN docker-php-ext-install \
-    calendar \
-    curl \
-    exif \
-    iconv \
-    mbstring \
-    pdo \
-    pdo_mysql \
-    pcntl \
-    tokenizer \
-    xml \
-    gd \
-    zip \
-    bcmath \
-    soap \
-    mysqli
+WORKDIR /app/
 
-    # Install composer
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_HOME /tmp
-ENV PATH /scripts:/scripts/aliases:$PATH
 
-# Install composer
+# Install various PHP extensions
+RUN  pecl install \
+     redis \
+     imagick \
+     xdebug
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=1.10.16\
-    && composer --ansi --version --no-interaction \
-    && composer clear-cache \
-    && rm -rf /tmp/composer-setup.php /tmp/.htaccess \
-    # show php info
-    && php -v \
-    && php-fpm -v \
-    && php -m
+RUN docker-php-ext-enable imagick redis xdebug
 
-# Cleanup dev dependencies
-RUN apk del -f .build-deps
+RUN docker-php-ext-install calendar curl exif iconv mbstring pdo pdo_mysql pcntl tokenizer xml gd zip bcmath opcache mysqli soap
 
+
+
+
+
+########SOME CONFIG ######
+RUN set -x \
+        && rm -rf /tmp/* \
+        && rm -rf /usr/src/* \
+        && rm -rf /var/lib/apt/lists/*
+      #  ADD ./docker/php/php.ini /usr/local/etc/php/conf.d/40-custom.ini
+    #    ADD ./docker/php/php.ini /usr/local/etc/php/conf.d/local.ini
+        WORKDIR /var/www
+
+
+
+
+
+RUN rm -rf /tmp/pear
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+
+EXPOSE 9000
 WORKDIR /var/www
