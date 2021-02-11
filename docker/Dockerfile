@@ -12,7 +12,10 @@ RUN apt-get update \
         libjpeg-dev \
         libsqlite3-dev \
         libgmp-dev \
-        libzip-dev
+        libzip-dev \
+        zip \
+        unzip \
+        php-zip
 
 
 RUN apt-get update \
@@ -34,7 +37,7 @@ RUN apt-get update \
         yarn
 
 #Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=1.10.16
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /app/
 
