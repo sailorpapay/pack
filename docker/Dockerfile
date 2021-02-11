@@ -14,8 +14,7 @@ RUN apt-get update \
         libgmp-dev \
         libzip-dev \
         zip \
-        unzip \
-        php-zip
+        unzip
 
 
 RUN apt-get update \
