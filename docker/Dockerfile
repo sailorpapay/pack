@@ -52,6 +52,10 @@ RUN docker-php-ext-enable imagick redis xdebug
 RUN docker-php-ext-install calendar curl exif iconv mbstring pdo pdo_mysql pcntl tokenizer xml gd zip bcmath opcache mysqli soap
 
 
+#####install node
+RUN curl -sL https://deb.nodesource.com/setup_15.x | bash - && \
+apt-get install -y nodejs build-essential yarn
+RUN npm i npm@latest -g
 
 
 
@@ -63,7 +67,6 @@ RUN set -x \
       #  ADD ./docker/php/php.ini /usr/local/etc/php/conf.d/40-custom.ini
     #    ADD ./docker/php/php.ini /usr/local/etc/php/conf.d/local.ini
         WORKDIR /var/www
-
 
 
 
